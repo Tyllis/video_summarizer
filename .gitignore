@@ -2,6 +2,7 @@ experiments/
 outputs/
 .idea/
 venv/
+legacy/
 __pycache__/
 config.py
 trial.py

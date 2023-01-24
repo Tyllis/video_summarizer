@@ -131,6 +131,9 @@ if not st.session_state.submit_click:
         
         You must have a OpenAI API key to use this app. Go to [OpenAI](https://openai.com/api/) to 
         register an account. OpenAI gives you free $18.00 credit for 3 months when you first sign up.
+        
+        If you run into an error, double check the video ID, and the start/end timestamp. Make sure 
+        the API key is entered correctly. Refresh the page to try again.
         """
     )
 else:
