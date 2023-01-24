@@ -125,7 +125,6 @@ if not st.session_state.submit_click:
 else:
 
     if not st.session_state.condense_click:
-        st.session_state.condense_click = True
         if 'summary_df' not in st.session_state:
             df = get_df(user_inp, get_transcript, start_time, end_time)
         else:
@@ -146,6 +145,7 @@ else:
         st.session_state.output_text_full = output_text_full
         st.session_state.output_text_short = output_text_short
         st.session_state.summary_csv = summary_csv
+        st.session_state.condense_click = True
 
     col1, col2, col3 = st.columns(3)
     with col1:
