@@ -9,7 +9,6 @@ import datetime, openai, time
 import pandas as pd
 from tqdm import tqdm
 from io import StringIO
-from config import UserConfig, DevConfig
 from youtube_transcript_api import YouTubeTranscriptApi
 
 # get transcript from youtube using the api
@@ -148,7 +147,7 @@ def write_output(summary_df, summary_only=True, file_name='output.txt'):
 # how-do-i-know-how-much-tokens-a-gpt-3-request-used
 
 if __name__ == "__main__":
-    
+    from config import UserConfig, DevConfig
     dev_mode = input("Development mode? (y or n):  ")
     setting = DevConfig if dev_mode in ['y', 'Y'] else UserConfig
     api_key = setting.api_key
