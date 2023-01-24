@@ -1,4 +1,4 @@
-import openai
+import openai, time
 import streamlit as st
 import utilities as util
 import streamlit_ext as ste
@@ -22,16 +22,26 @@ def get_df(user_inp, get_transcript, start_time, end_time):
     return df
 
 def add_summary(df, chunk_len, gpt3_setting):
-    df['num_words'] = df['summary'].apply(lambda x: len(x.split()))
-    text_chunks, text_summary, df = util.get_summary(
-        df,
-        chunk_len,
-        'num_words',
-        'summary',
-        gpt3_setting
-    )
-    df = util.get_summary_df(df, text_chunks, text_summary)
-    return df
+    tmp = df.copy()
+    tmp['num_words'] = tmp['summary'].apply(lambda x: len(x.split()))
+    tmp['chunk_id'] = tmp['num_words'].cumsum() // int(chunk_len)
+    text_chunks, text_summary = [], []
+    unique_ids = tmp['chunk_id'].unique()
+    my_bar = st.progress(0)
+    for idx, cid in enumerate(unique_ids):
+        if gpt3_setting['model'] != "text-davinci-003":
+            time.sleep(0.5)  # to avoid hitting data transmit cap
+        text = tmp[tmp['chunk_id'] == cid]['text']
+        text = ' '.join(text.tolist())
+        text_chunks.append(text)
+        text = tmp[tmp['chunk_id'] == cid]['summary']
+        text = ' '.join(text.tolist())
+        text = ' '.join(text.split())
+        text_summary.append(util.summarize_text(text, gpt3_setting))
+        my_bar.progress((idx + 1) / len(unique_ids))
+    my_bar.empty()
+    tmp = util.get_summary_df(tmp, text_chunks, text_summary)
+    return tmp
 
 def reset_session():
     for key in st.session_state.keys():
@@ -59,7 +69,7 @@ with st.sidebar:
 
     key = st.text_input(
         label='OpenAI API Key',
-        placeholder='***********************',
+        placeholder='*****************',
         type='password',
         help='''
             I do not store your key. However, if you   
@@ -103,6 +113,7 @@ if submit_click:
     st.session_state.submit_click = True
 
 if not st.session_state.submit_click:
+    st.title('YouTube Video Summarizer')
     st.markdown(
         """
         Hello. I am an AI agent trained to summarize YouTube transcripts. I can help you generate 
