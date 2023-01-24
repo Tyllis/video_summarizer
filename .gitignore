@@ -1,0 +1,6 @@
+experiments/
+outputs/
+.idea/
+venv/
+config.py
+trial.py
